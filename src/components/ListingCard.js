@@ -7,7 +7,7 @@ import React, { useState } from "react";
 //   "location": "BROOKLYN"
 // },
 
-function ListingCard({ item, onDeleteItem }) {
+function ListingCard({ listing, onDeleteListing }) {
   // console.log("In ListingCard, item: ", item);
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -16,18 +16,18 @@ function ListingCard({ item, onDeleteItem }) {
   }
 
   function handleDeleteItem() {
-    fetch(`http://localhost:6001/listings/${item.id}`, {
+    fetch(`http://localhost:6001/listings/${listing.id}`, {
       method: 'DELETE',
     })
     .then(resp => resp.json())
-    .then(() => onDeleteItem(item));
+    .then(() => onDeleteListing(listing));
   }
 
   return (
     <li className="card">
       <div className="image">
         <span className="price">$0</span>
-        <img src={item.image} alt={item.description} />
+        <img src={listing.image} alt={listing.description} />
       </div>
       <div className="details">
         {isFavorite ? (
@@ -35,8 +35,8 @@ function ListingCard({ item, onDeleteItem }) {
         ) : (
           <button className="emoji-button favorite" onClick={handleFavoriteClick}>☆</button>
         )}
-        <strong>{item.description}</strong>
-        <span> · {item.location}</span>
+        <strong>{listing.description}</strong>
+        <span> · {listing.location}</span>
         <button className="emoji-button delete" onClick={handleDeleteItem}>🗑</button>
       </div>
     </li>

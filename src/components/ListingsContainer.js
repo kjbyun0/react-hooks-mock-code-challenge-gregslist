@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import ListingCard from "./ListingCard";
+import NewListingCard from './NewListingCard';
 
-function ListingsContainer({ searchKey, onSetSearchKey }) {
+function ListingsContainer({ searchKey, isSortByLocation }) {
   const [gregsList, setGregsList] = useState([]);
 
-  function handleDeleteItem(deletedItem) {
-    setGregsList(gregsList.filter(item => item.id !== deletedItem.id));
+  function handleDeleteListing(deletedListing) {
+    setGregsList(gregsList.filter(listing => listing.id !== deletedListing.id));
+  }
+
+  function handleNewListing(newListing) {
+    setGregsList([...gregsList, newListing]);
   }
 
   useEffect(() => {
@@ -14,21 +19,29 @@ function ListingsContainer({ searchKey, onSetSearchKey }) {
     .then(data => setGregsList(data));
   }, []);
 
-  const filteredItems = searchKey ? 
-    gregsList.filter(item => item.description.toLowerCase().includes(searchKey.toLowerCase())) : 
-    gregsList;
+  const filteredListings = searchKey ? 
+    gregsList.filter(listing => listing.description.toLowerCase().includes(searchKey.toLowerCase())) : 
+    [...gregsList];
 
-  const items = filteredItems.map(item => 
-    <ListingCard key={item.id} item={item} onDeleteItem={handleDeleteItem} />);
+  // console.log("In ListingsContainer, isSortByLocation: ", isSortByLocation)
+  if (isSortByLocation) {
+    filteredListings.sort((a, b) => a.location.toLowerCase() <= b.location.toLowerCase() ? -1 : 1);
+  }
+
+  const displayListings = filteredListings.map(listing => 
+    <ListingCard key={listing.id} listing={listing} onDeleteListing={handleDeleteListing} />);
   // console.log('In ListingContainer, gregsList: ', gregsList);
   // console.log('In ListingContainer, items: ', items);
 
   return (
-    <main>
-      <ul className="cards">
-        {items}
-      </ul>
-    </main>
+    <React.Fragment>
+      <NewListingCard onNewListing={handleNewListing}/>
+      <main>
+        <ul className="cards">
+          {displayListings}
+        </ul>
+      </main>
+    </React.Fragment>
   );
 }
 
